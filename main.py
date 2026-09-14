@@ -1,3 +1,6 @@
+from datetime import datetime, timezone
+from uuid import uuid4
+
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
@@ -26,7 +29,9 @@ def fall_detected():
     latest_event = {
         "status": "received",
         "event": "fall",
-        "risk": "critical"
+        "risk": "critical",
+        "event_id": str(uuid4()),
+        "timestamp": datetime.now(timezone.utc).isoformat(),
     }
 
     return latest_event
@@ -40,3 +45,14 @@ def get_latest_event():
         }
 
     return latest_event
+
+
+@app.post("/acknowledge")
+def acknowledge_event():
+    global latest_event
+
+    latest_event = None
+
+    return {
+        "status": "acknowledged"
+    }
